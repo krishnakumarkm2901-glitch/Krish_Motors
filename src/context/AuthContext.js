@@ -5,8 +5,8 @@ const AuthContext = createContext(null);
 const adminAccount = {
   id: "admin",
   name: "Krish_Motors Admin",
-  email: process.env.REACT_APP_ADMIN_EMAIL || "admin@krishmotors.com",
-  password: process.env.REACT_APP_ADMIN_PASSWORD || "Admin@123",
+  email: process.env.REACT_APP_ADMIN_EMAIL || "",
+  password: process.env.REACT_APP_ADMIN_PASSWORD || "",
   role: "admin",
 };
 
