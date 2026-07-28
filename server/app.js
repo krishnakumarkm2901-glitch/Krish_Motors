@@ -19,10 +19,7 @@ function createApp() {
   app.use(express.json({ limit: "3mb" }));
 
   app.get("/", (_request, response) => {
-    response.json({
-      success: true,
-      message: "Krish Motors API is running successfully 🚀",
-    });
+    response.redirect(301, "https://krish-motors.vercel.app");
   });
 
   app.get("/api/health", (_request, response) => {
