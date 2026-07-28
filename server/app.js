@@ -62,7 +62,15 @@ async function startServer() {
 
 if (require.main === module) {
   startServer().catch((error) => {
-    console.error("Unable to start the API:", error.message);
+    if (/bad auth|authentication failed/i.test(error.message)) {
+      console.error(
+        "Unable to start the API: MongoDB Atlas rejected MONGODB_URI. " +
+        "Check the Atlas database username and password in Render. " +
+        "Do not include < or > around the password."
+      );
+    } else {
+      console.error("Unable to start the API:", error.message);
+    }
     process.exit(1);
   });
 }

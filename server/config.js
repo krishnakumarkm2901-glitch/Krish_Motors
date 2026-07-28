@@ -22,6 +22,20 @@ function validateEnvironment() {
       "or to the Render environment variables before deployment."
     );
   }
+
+  if (!config.mongodbUri.startsWith("mongodb+srv://") &&
+      !config.mongodbUri.startsWith("mongodb://")) {
+    throw new Error(
+      "MONGODB_URI must start with mongodb+srv:// or mongodb://."
+    );
+  }
+
+  if (/[<>]/.test(config.mongodbUri)) {
+    throw new Error(
+      "MONGODB_URI contains < or > placeholder characters. Remove the angle " +
+      "brackets from the MongoDB username and password."
+    );
+  }
 }
 
 module.exports = { ...config, config, validateEnvironment };
