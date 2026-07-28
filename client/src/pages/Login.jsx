@@ -18,7 +18,7 @@ export default function Login({ adminMode = false }) {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
     setError("");
   };
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
     if (registering && (!form.name.trim() || !/^[6-9]\d{9}$/.test(form.phone))) {
       return setError("Enter your name and a valid 10-digit mobile number.");
@@ -26,7 +26,7 @@ export default function Login({ adminMode = false }) {
     if (!/\S+@\S+\.\S+/.test(form.email) || form.password.length < 6) {
       return setError("Enter a valid email and a password of at least 6 characters.");
     }
-    const result = registering ? register(form) : login({ ...form, role });
+    const result = await (registering ? register(form) : login({ ...form, role }));
     if (!result.ok) return setError(result.message);
     navigate(result.user.role === "admin" ? "/admin" : location.state?.from || "/dashboard", { replace: true });
   };

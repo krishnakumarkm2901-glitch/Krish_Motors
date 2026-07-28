@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import useServices from "../hooks/useServices";
 import { useAuth } from "../context/AuthContext";
-import { BOOKINGS_KEY, makeId, readJson, writeJson } from "../utils/storage";
+import { api } from "../utils/api";
 import "./BookService.css";
 
 const initialForm = (preselected) => ({
@@ -78,26 +78,17 @@ export default function BookService() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    const booking = {
-      id: makeId(),
-      ...form,
-      userId: user.id,
-      userEmail: user.email,
-      status: "Pending",
-      serviceName:
-        services.find((s) => s.id === form.serviceId)?.name || form.serviceId,
-      bookedAt: new Date().toISOString(),
-    };
-
-    const existing = readJson(BOOKINGS_KEY, []);
-    writeJson(BOOKINGS_KEY, [...existing, booking]);
-
-    setSubmitted(true);
-    setForm({ ...initialForm(""), name: user.name, phone: user.phone || "" });
+    try {
+      await api("/bookings", { method: "POST", body: JSON.stringify(form) });
+      setSubmitted(true);
+      setForm({ ...initialForm(""), name: user.name, phone: user.phone || "" });
+    } catch (error) {
+      setErrors({ submit: error.message });
+    }
   };
 
   const handleNewBooking = () => setSubmitted(false);
@@ -247,6 +238,7 @@ export default function BookService() {
                 <button type="submit" className="btn btn-primary btn-block">
                   Submit Booking
                 </button>
+                {errors.submit && <span className="error">{errors.submit}</span>}
               </form>
             )}
           </div>

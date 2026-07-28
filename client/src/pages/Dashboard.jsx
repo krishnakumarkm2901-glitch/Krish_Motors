@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { BOOKINGS_KEY, DATA_EVENT, readJson } from "../utils/storage";
+import { api } from "../utils/api";
 import "./Dashboard.css";
 
 const statusClass = (status) => `status status-${status.toLowerCase().replaceAll(" ", "-")}`;
@@ -11,19 +11,7 @@ export default function Dashboard() {
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
-    const refresh = () => setBookings(
-      readJson(BOOKINGS_KEY, [])
-        .filter((booking) => booking.userId === user.id)
-        .sort((a, b) => new Date(b.bookedAt) - new Date(a.bookedAt))
-    );
-    refresh();
-    const sync = (event) => (!event.key || event.key === BOOKINGS_KEY) && refresh();
-    window.addEventListener("storage", sync);
-    window.addEventListener(DATA_EVENT, sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener(DATA_EVENT, sync);
-    };
+    api("/bookings").then((result) => setBookings(result.bookings)).catch(() => setBookings([]));
   }, [user.id]);
 
   return (

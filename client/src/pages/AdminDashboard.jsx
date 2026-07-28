@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import useServices from "../hooks/useServices";
-import {
-  BOOKINGS_KEY, DATA_EVENT, makeId, MESSAGES_KEY, readJson, SERVICES_KEY, USERS_KEY, writeJson,
-} from "../utils/storage";
+import { api } from "../utils/api";
 import "./Dashboard.css";
 
 const statuses = ["Pending", "Contacted", "Confirmed", "In Service", "Delivered", "Cancelled"];
@@ -19,45 +17,13 @@ export default function AdminDashboard() {
   const [serviceMessage, setServiceMessage] = useState("");
 
   useEffect(() => {
-    const refresh = () => setBookings(readJson(BOOKINGS_KEY, []).sort((a, b) => new Date(b.bookedAt) - new Date(a.bookedAt)));
-    refresh();
-    const sync = (event) => (!event.key || event.key === BOOKINGS_KEY) && refresh();
-    window.addEventListener("storage", sync);
-    window.addEventListener(DATA_EVENT, sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener(DATA_EVENT, sync);
-    };
-  }, []);
-
-  useEffect(() => {
-    const refresh = () => setMessages(
-      readJson(MESSAGES_KEY, []).sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt))
-    );
-    refresh();
-    const sync = (event) => (!event.key || event.key === MESSAGES_KEY) && refresh();
-    window.addEventListener("storage", sync);
-    window.addEventListener(DATA_EVENT, sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener(DATA_EVENT, sync);
-    };
-  }, []);
-
-  useEffect(() => {
-    const refresh = () => setUsers(
-      readJson(USERS_KEY, []).sort((a, b) =>
-        new Date(b.registeredAt || 0) - new Date(a.registeredAt || 0)
-      )
-    );
-    refresh();
-    const sync = (event) => (!event.key || event.key === USERS_KEY) && refresh();
-    window.addEventListener("storage", sync);
-    window.addEventListener(DATA_EVENT, sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener(DATA_EVENT, sync);
-    };
+    Promise.all([
+      api("/admin/bookings"), api("/admin/contacts"), api("/admin/users"),
+    ]).then(([bookingData, contactData, userData]) => {
+      setBookings(bookingData.bookings);
+      setMessages(contactData.messages);
+      setUsers(userData.users);
+    });
   }, []);
 
   const counts = useMemo(() => ({
@@ -66,10 +32,9 @@ export default function AdminDashboard() {
     delivered: bookings.filter((item) => item.status === "Delivered").length,
   }), [bookings]);
 
-  const updateStatus = (id, status) => {
-    writeJson(BOOKINGS_KEY, readJson(BOOKINGS_KEY, []).map((item) =>
-      item.id === id ? { ...item, status, updatedAt: new Date().toISOString() } : item
-    ));
+  const updateStatus = async (id, status) => {
+    await api(`/admin/bookings/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
+    setBookings((items) => items.map((item) => item.id === id ? { ...item, status } : item));
   };
 
   const contactCustomer = (booking) => {
@@ -77,10 +42,9 @@ export default function AdminDashboard() {
     window.location.href = `tel:${booking.phone}`;
   };
 
-  const updateMessage = (id, status) => {
-    writeJson(MESSAGES_KEY, readJson(MESSAGES_KEY, []).map((item) =>
-      item.id === id ? { ...item, status, updatedAt: new Date().toISOString() } : item
-    ));
+  const updateMessage = async (id, status) => {
+    await api(`/admin/contacts/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
+    setMessages((items) => items.map((item) => item.id === id ? { ...item, status } : item));
   };
 
   const replyToMessage = (item) => {
@@ -88,9 +52,10 @@ export default function AdminDashboard() {
     window.location.href = `mailto:${item.email}?subject=${encodeURIComponent("Reply from Krish_Motors")}`;
   };
 
-  const deleteMessage = (item) => {
+  const deleteMessage = async (item) => {
     if (!window.confirm(`Delete the message from ${item.name}?`)) return;
-    writeJson(MESSAGES_KEY, readJson(MESSAGES_KEY, []).filter((message) => message.id !== item.id));
+    await api(`/admin/contacts/${item.id}`, { method: "DELETE" });
+    setMessages((items) => items.filter((message) => message.id !== item.id));
   };
 
   const setImageFile = (file) => {
@@ -112,7 +77,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const saveService = (event) => {
+  const saveService = async (event) => {
     event.preventDefault();
     if (!serviceForm.name.trim() || !serviceForm.description.trim() || Number(serviceForm.price) <= 0) {
       return setServiceMessage("Name, description, and a valid price are required.");
@@ -124,13 +89,13 @@ export default function AdminDashboard() {
       price: Number(serviceForm.price),
       image: serviceForm.image || "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=600&q=80",
     };
-    const updated = editingServiceId
-      ? services.map((item) => item.id === editingServiceId ? { ...service, id: editingServiceId } : item)
-      : [...services, { ...service, id: makeId() }];
-    writeJson(SERVICES_KEY, updated);
+    await api(editingServiceId ? `/services/${editingServiceId}` : "/services", {
+      method: editingServiceId ? "PUT" : "POST", body: JSON.stringify(service),
+    });
     setServiceForm(blankService);
     setEditingServiceId(null);
     setServiceMessage(editingServiceId ? "Service updated." : "Service added.");
+    window.setTimeout(() => window.location.reload(), 400);
   };
 
   const editService = (service) => {
@@ -139,9 +104,10 @@ export default function AdminDashboard() {
     setServiceMessage("");
   };
 
-  const deleteService = (service) => {
+  const deleteService = async (service) => {
     if (!window.confirm(`Delete "${service.name}"?`)) return;
-    writeJson(SERVICES_KEY, services.filter((item) => item.id !== service.id));
+    await api(`/services/${service.id}`, { method: "DELETE" });
+    window.location.reload();
   };
 
   return (

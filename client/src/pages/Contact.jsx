@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { makeId, MESSAGES_KEY, readJson, writeJson } from "../utils/storage";
+import { api } from "../utils/api";
 import "./Contact.css";
 
 const initialForm = { name: "", email: "", message: "" };
@@ -38,26 +38,16 @@ export default function Contact() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    const messages = readJson(MESSAGES_KEY, []);
-    writeJson(MESSAGES_KEY, [...messages, {
-      id: makeId(),
-      ...form,
-      name: form.name.trim(),
-      email: form.email.trim().toLowerCase(),
-      message: form.message.trim(),
-      userId: user?.id || null,
-      status: "Unread",
-      sentAt: new Date().toISOString(),
-    }]);
-    setSent(true);
-    setForm({
-      ...initialForm,
-      name: user?.name || "",
-      email: user?.email || "",
-    });
+    try {
+      await api("/contact", { method: "POST", body: JSON.stringify(form) });
+      setSent(true);
+      setForm({ ...initialForm, name: user?.name || "", email: user?.email || "" });
+    } catch (error) {
+      setErrors({ submit: error.message });
+    }
   };
 
   return (
@@ -150,6 +140,7 @@ export default function Contact() {
                 <button type="submit" className="btn btn-primary btn-block">
                   Send Message
                 </button>
+                {errors.submit && <span className="error">{errors.submit}</span>}
               </form>
             )}
           </div>
