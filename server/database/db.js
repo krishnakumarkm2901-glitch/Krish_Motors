@@ -1,8 +1,12 @@
 const mongoose = require("mongoose");
 
-async function connectDatabase(uri) {
+async function connectDatabase(mongodbUri) {
+  if (!mongodbUri) {
+    throw new Error("Cannot connect to MongoDB: MONGODB_URI is missing.");
+  }
+
   mongoose.set("strictQuery", true);
-  await mongoose.connect(uri);
+  await mongoose.connect(mongodbUri);
   console.log(`MongoDB connected: ${mongoose.connection.name}`);
 }
 

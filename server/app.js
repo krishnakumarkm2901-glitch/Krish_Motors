@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-const config = require("./config");
+const { config, validateEnvironment } = require("./config");
 const { connectDatabase } = require("./database/db");
 const { ensureAdmin } = require("./controllers/auth_controller");
 const { seedServices } = require("./controllers/service_controller");
@@ -49,13 +49,14 @@ function createApp() {
 }
 
 async function startServer() {
-  await connectDatabase(config.mongoUri);
+  validateEnvironment();
+  await connectDatabase(config.mongodbUri);
   await seedServices();
   await ensureAdmin();
 
   const app = createApp();
   return app.listen(config.port, () => {
-    console.log(`API running at http://localhost:${config.port}`);
+    console.log(`API running on port ${config.port}`);
   });
 }
 

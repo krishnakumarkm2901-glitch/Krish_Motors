@@ -56,7 +56,7 @@ Copy-Item server/.env.example server/.env
 Configure `server/.env`:
 
 ```env
-MONGO_URI=mongodb://localhost:27017/bike_service_booking
+MONGODB_URI=your-local-or-atlas-mongodb-connection-string
 JWT_SECRET=replace-with-a-long-random-value
 JWT_EXPIRES_IN=7d
 ADMIN_NAME=Krish_Motors Admin
@@ -66,8 +66,21 @@ CLIENT_ORIGIN=http://localhost:3000
 PORT=5000
 ```
 
-For MongoDB Atlas, replace `MONGO_URI` with the Atlas connection string. Make
+For MongoDB Atlas, set `MONGODB_URI` to the Atlas connection string. Make
 sure special characters in the database username and password are URL-encoded.
+
+For Render, add these values under **Environment** in the backend service:
+
+- `MONGODB_URI`
+- `JWT_SECRET`
+- `JWT_EXPIRES_IN`
+- `ADMIN_NAME`
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+- `CLIENT_ORIGIN`
+
+Render supplies `PORT` automatically. Do not commit `server/.env`; it is only
+for local development.
 
 Start the complete MERN development environment:
 
