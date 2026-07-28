@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+const API_URL = import.meta.env.VITE_API_URL;
+
+export { API_URL };
 
 export async function api(path, options = {}) {
   const token = localStorage.getItem("krish_motors_token");

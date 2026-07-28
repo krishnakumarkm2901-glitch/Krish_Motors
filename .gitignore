@@ -10,7 +10,8 @@ client/dist/
 .env.local
 .env.*
 !.env.example
-!client/.env
+!client/.env.development
+!client/.env.production
 
 .vercel/
 .deployment
