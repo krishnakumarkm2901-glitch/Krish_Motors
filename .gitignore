@@ -1,37 +1,25 @@
 node_modules/
+client/node_modules/
+server/node_modules/
+
+dist/
 build/
 client/dist/
-.vercel/
+
 .env
 .env.local
 .env.*
 !.env.example
-__pycache__/
-.venv/
-npm-debug.log*
-.dev-*.log
-
-node_modules/
-dist/
-build/
-
-.env
-.env.local
-.env.*
+!client/.env
 
 .vercel/
 .deployment
 
-.dev-error.log
-.dev-output.log
+__pycache__/
+.venv/
 
-node_modules/
-client/node_modules/
-server/node_modules/
-
-client/dist/
-dist/
+npm-debug.log*
+.dev-*.log
 
 .env
 .env.local
-.vercel/
