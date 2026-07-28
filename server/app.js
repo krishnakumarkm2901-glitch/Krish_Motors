@@ -18,6 +18,13 @@ function createApp() {
   app.use(cors({ origin: config.clientOrigin }));
   app.use(express.json({ limit: "3mb" }));
 
+  app.get("/", (_request, response) => {
+    response.json({
+      success: true,
+      message: "Krish Motors API is running successfully 🚀",
+    });
+  });
+
   app.get("/api/health", (_request, response) => {
     response.json({ status: "ok" });
   });
