@@ -15,7 +15,18 @@ function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
-  app.use(cors({ origin: config.clientOrigin }));
+  app.use(cors({
+    origin(origin, callback) {
+      const isConfiguredClient = origin === config.clientOrigin;
+      const isLocalClient = /^http:\/\/localhost:\d+$/.test(origin || "");
+
+      if (!origin || isConfiguredClient || isLocalClient) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Origin is not allowed by CORS."));
+    },
+  }));
   app.use(express.json({ limit: "3mb" }));
 
   app.get("/", (_request, response) => {
