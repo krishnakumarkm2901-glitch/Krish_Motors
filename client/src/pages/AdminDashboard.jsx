@@ -49,7 +49,7 @@ export default function AdminDashboard() {
 
   const replyToMessage = (item) => {
     updateMessage(item.id, "Replied");
-    window.location.href = `mailto:${item.email}?subject=${encodeURIComponent("Reply from Krish_Motors")}`;
+    window.location.href = `mailto:${item.email}?subject=${encodeURIComponent("Reply from KrishD_Motors")}`;
   };
 
   const deleteMessage = async (item) => {

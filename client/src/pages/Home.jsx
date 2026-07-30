@@ -18,7 +18,7 @@ export default function Home() {
               Keep Your Ride <span>Tuned</span> &amp; Ready For The Road
             </h1>
             <p>
-              From routine oil changes to full engine tune-ups, Krish_Motors'
+              From routine oil changes to full engine tune-ups, KrishD_Motors'
               certified mechanics get your bike serviced fast, transparent,
               and hassle-free. Book a slot in under a minute.
             </p>

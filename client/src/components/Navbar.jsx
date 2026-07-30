@@ -25,7 +25,7 @@ export default function Navbar() {
     <header className="navbar">
       <div className="container navbar-inner">
         <NavLink to="/" className="logo" onClick={() => setOpen(false)}>
-          Krish_<span>Motors</span>
+          KrishD_<span>Motors</span>
         </NavLink>
 
         <nav className={`nav-links ${open ? "open" : ""}`}>

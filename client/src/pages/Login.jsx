@@ -34,7 +34,7 @@ export default function Login({ adminMode = false }) {
     <section className="auth-page">
       <div className="auth-card">
         <div className="auth-intro">
-          <span className="eyebrow">{adminMode ? "Restricted Access" : "Welcome to Krish_Motors"}</span>
+          <span className="eyebrow">{adminMode ? "Restricted Access" : "Welcome to KrishD_Motors"}</span>
           <h1>{adminMode ? "Admin Login" : registering ? "Create your account" : "User Login"}</h1>
           <p>{adminMode ? "Sign in to manage services and customer bookings." : "Manage service bookings and receive live status updates."}</p>
         </div>

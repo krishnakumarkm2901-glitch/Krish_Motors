@@ -10,7 +10,7 @@ export default function Footer() {
       <div className="container footer-grid">
         <div className="footer-brand">
           <div className="logo">
-            Krish_<span>Motors</span>
+            KrishD_<span>Motors</span>
           </div>
           <p>
             Trusted two-wheeler servicing with honest pricing and quick
@@ -39,7 +39,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>&copy; {year} Krish_Motors Bike Service. All rights reserved.</p>
+        <p>&copy; {year} KrishD_Motors Bike Service. All rights reserved.</p>
       </div>
     </footer>
   );

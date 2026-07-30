@@ -9,7 +9,7 @@ const config = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
   clientOrigin: process.env.CLIENT_ORIGIN,
   admin: {
-    name: process.env.ADMIN_NAME || "Krish_Motors Admin",
+    name: process.env.ADMIN_NAME || "KrishD_Motors Admin",
     email: (process.env.ADMIN_EMAIL || "admin@krishmotors.com").trim().toLowerCase(),
     password: process.env.ADMIN_PASSWORD || "Admin@123",
   },
